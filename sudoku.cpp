@@ -87,16 +87,16 @@ void Sudoku::print_grid_stdio() const {
 } 
 
 void Sudoku::solve(bool print) {
-    char finish = 'y';
+    char keep_backtracking = 'y';
     // base case
     if(is_solved()) {
         if(print) {
             std::cout << "Solved!\n";
             print_grid_stdio();
         }
-        std::cout << "Try another Solution(y/n)?";
-        std::cin >> finish;
-        if(finish=='n') { stop_recursion = true; }
+        std::cout << "Try another Solution [y/n]?";
+        std::cin >> keep_backtracking;
+        if(keep_backtracking=='n') { stop_recursion = true; }
         return;
     }
     // recursive backtracking algorithm
@@ -109,8 +109,8 @@ void Sudoku::solve(bool print) {
                         set_value(y,x,num);
                         if(print) { print_grid_stdio(); }
                         solve(print);
-                        if   (!stop_recursion) { clear_value(y,x,num); }
-                        else { return; }
+                        if   (stop_recursion) { return; }
+                        else { clear_value(y,x,num); }
                     }
                 }
                 return;
