@@ -44,7 +44,7 @@ void Sudoku::set_value(int y_val, int x_val, int number) {
     grid[y_val][x_val] = number;
 }
 
-void Sudoku::clear_value(int y_val, int x_val, int number) {
+void Sudoku::clear_value(int y_val, int x_val) {
     grid[y_val][x_val] = 0;
 }
 
@@ -110,7 +110,7 @@ void Sudoku::solve(bool print) {
                         if(print) { print_grid_stdio(); }
                         solve(print);
                         if   (stop_recursion) { return; }
-                        else { clear_value(y,x,num); }
+                        else { clear_value(y,x); }
                     }
                 }
                 return;

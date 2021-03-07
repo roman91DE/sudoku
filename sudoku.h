@@ -18,5 +18,5 @@ class Sudoku{
         bool is_solved();
         void print_grid_stdio() const;
         void set_value(int y_val, int x_val, int number);
-        void clear_value(int y_val, int x_val, int number);
+        void clear_value(int y_val, int x_val);
 };
