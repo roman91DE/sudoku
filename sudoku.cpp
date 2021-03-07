@@ -4,17 +4,14 @@
 #include <cstdlib>
 
 
-Sudoku::Sudoku(): grid(std::vector<std::vector<int> >{}), solved(false) {
+Sudoku::Sudoku(): grid(std::vector<std::vector<int> >{}), stop_recursion(false) {
     srand(time(NULL));
     for(unsigned int i = 0; i<9; ++i) {
         grid.push_back(std::vector<int>{0,0,0,0,0,0,0,0,0});
     }
 }
 
-Sudoku::Sudoku(Sudoku *S) {
-    this->grid   = S->grid;
-    this->solved = S->solved;
-}
+Sudoku::Sudoku(Sudoku *S) : grid(S->grid), stop_recursion(false) {}
 
 Sudoku::~Sudoku() {}
 
@@ -34,8 +31,21 @@ bool Sudoku::is_possible(int y_val, int x_val, int number) const {
     return true;
 }
 
+bool Sudoku::is_solved() {
+    for (auto &row: grid) {
+        for (auto &val: row) {
+            if(val==0) return false;
+        }
+    }
+    return true;
+}
+
 void Sudoku::set_value(int y_val, int x_val, int number) {
     grid[y_val][x_val] = number;
+}
+
+void Sudoku::clear_value(int y_val, int x_val, int number) {
+    grid[y_val][x_val] = 0;
 }
 
 
@@ -76,3 +86,35 @@ void Sudoku::print_grid_stdio() const {
     std::cout << "\n\n";
 } 
 
+void Sudoku::solve(bool print) {
+    char finish = 'y';
+    // base case
+    if(is_solved()) {
+        if(print) {
+            std::cout << "Solved!\n";
+            print_grid_stdio();
+        }
+        std::cout << "Try another Solution(y/n)?";
+        std::cin >> finish;
+        if(finish=='n') { stop_recursion = true; }
+        return;
+    }
+    // recursive backtracking algorithm
+    for (int y = 0; y<9; ++y) {
+        for (int x = 0; x<9; ++x) {
+            if(grid[y][x] == 0) {
+                // try numbers for empty position
+                for (int num = 1; num<10; ++num) {
+                    if (is_possible(y,x,num)) {
+                        set_value(y,x,num);
+                        if(print) { print_grid_stdio(); }
+                        solve(print);
+                        if   (!stop_recursion) { clear_value(y,x,num); }
+                        else { return; }
+                    }
+                }
+                return;
+            }
+        }
+    }
+}
