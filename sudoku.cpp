@@ -2,6 +2,7 @@
 #include <iostream>
 #include <random>
 #include <cstdlib>
+#include <fstream>
 
 
 Sudoku::Sudoku(): grid(std::vector<std::vector<int> >{}), stop_recursion(false) {
@@ -11,7 +12,38 @@ Sudoku::Sudoku(): grid(std::vector<std::vector<int> >{}), stop_recursion(false) 
     }
 }
 
+
 Sudoku::Sudoku(Sudoku *S) : grid(S->grid), stop_recursion(false) {}
+
+
+Sudoku::Sudoku(std::string filepath): stop_recursion(false) {
+    std::ifstream file_grid;
+    int buffer;
+    file_grid.open(filepath);
+    if(!file_grid.is_open()) {
+        std::cout << "Error - Could not open File!\n";
+    }
+    else {
+    for(unsigned int i = 0; i<9; ++i) {
+        std::vector<int> row;
+        for (unsigned int j = 0; j<9; ++j) {
+            file_grid >> buffer;
+            row.push_back(buffer);
+        }
+        grid.push_back(row);
+    }
+    file_grid.close();
+    // std::cout << "Succesfully read from File!\n";
+    }
+}
+
+
+Sudoku& Sudoku::operator=(const Sudoku &rhs) {
+    grid = rhs.grid;
+    stop_recursion = false;
+    return *this;
+}
+
 
 Sudoku::~Sudoku() {}
 
@@ -31,7 +63,7 @@ bool Sudoku::is_possible(int y_val, int x_val, int number) const {
     return true;
 }
 
-bool Sudoku::is_solved() {
+bool Sudoku::is_solved() const {
     for (auto &row: grid) {
         for (auto &val: row) {
             if(val==0) return false;
@@ -76,7 +108,7 @@ void Sudoku::random_deletion(int n_numbers) {
  
 
 void Sudoku::print_grid_stdio() const {
-    std::cout << "  1-2-3-4-5-6-7-8-9-";
+    std::cout << " -1-2-3-4-5-6-7-8-9-";
     for (unsigned int y = 0; y<9; ++y) {
         std::cout << '\n' << y+1 << "|";
         for (unsigned int x = 0; x<9; ++x) {
@@ -86,9 +118,9 @@ void Sudoku::print_grid_stdio() const {
     std::cout << "\n\n";
 } 
 
+
 void Sudoku::solve(bool print) {
     char keep_backtracking = 'y';
-    // base case
     if(is_solved()) {
         if(print) {
             std::cout << "Solved!\n";
@@ -99,11 +131,9 @@ void Sudoku::solve(bool print) {
         if(keep_backtracking=='n') { stop_recursion = true; }
         return;
     }
-    // recursive backtracking algorithm
     for (int y = 0; y<9; ++y) {
         for (int x = 0; x<9; ++x) {
             if(grid[y][x] == 0) {
-                // try numbers for empty position
                 for (int num = 1; num<10; ++num) {
                     if (is_possible(y,x,num)) {
                         set_value(y,x,num);
