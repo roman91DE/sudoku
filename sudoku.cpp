@@ -1,8 +1,8 @@
 #include "sudoku.h"
 #include <iostream>
+#include <fstream>
 #include <random>
 #include <cstdlib>
-#include <fstream>
 
 
 Sudoku::Sudoku(): grid(std::vector<std::vector<int> >{}), stop_recursion(false) {
@@ -147,4 +147,32 @@ void Sudoku::solve(bool print) {
             }
         }
     }
+}
+
+
+void Sudoku::solve_once()  {
+    if(is_solved()) {
+            std::cout << "Solved!\n";
+            return;
+    }
+    for (int y = 0; y<9; ++y) {
+        for (int x = 0; x<9; ++x) {
+            if(grid[y][x] == 0) {
+                for (int num = 1; num<10; ++num) {
+                    if (is_possible(y,x,num)) {
+                        set_value(y,x,num);
+                        solve_once();
+                        if   (is_solved()) { return; }
+                        else { clear_value(y,x); }
+                    }
+                }
+                return;
+            }
+        }
+    }
+}
+
+
+void generateSudoku(std::string filename) {
+
 }
